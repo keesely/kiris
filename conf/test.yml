@@ -1,0 +1,29 @@
+develop:
+  cache: true
+  debug: true
+  env: develop
+  host: http://localhost:3000
+  key: 123456789
+  listen: :3000
+  location: Asia/Shanghai
+name: test
+product:
+  cache: true
+  debug: true
+  env: production
+  host: http://localhost:3000
+  key: 123456789
+  listen: :3000
+  location: PRC
+  port: 3000
+  redis:
+    host: localhost
+stage:
+  cache: true
+  debug: true
+  env: develop
+  host: http://localhost:3000
+  key: 123456789
+  listen: :3000
+  location: Asia/Shanghai
+version: 1.0.0
