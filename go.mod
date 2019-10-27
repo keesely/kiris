@@ -1,4 +1,4 @@
-module test/github.com/keesely/kiris
+module github.com/keesely/kiris
 
 go 1.13
 

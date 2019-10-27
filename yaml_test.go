@@ -12,7 +12,9 @@ import (
 )
 
 func TestConfGet(t *testing.T) {
-	cnf := LoadConfig("yaml", "./conf/test.yml")
+	fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+	fmt.Println("Load Yaml Config")
+	cnf := NewYamlLoad("./conf/test.yml")
 
 	fmt.Println("Get Name: ", cnf.Get("name"))
 
@@ -33,7 +35,6 @@ func TestConfGet(t *testing.T) {
 
 	fmt.Println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 
-	cnf.Set("product.debug", true)
 	cnf.Set("product.port", 3000)
 	datas := cnf.Get("product").(map[string]interface{})
 	fmt.Println(datas)
@@ -43,7 +44,10 @@ func TestConfGet(t *testing.T) {
 	}
 	fmt.Println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM")
 
-	cnf.Set("stage", cnf.Get("develop"))
+	cnf.Set("stage", DeepCopy(cnf.Get("product")))
+	cnf.Set("stage.debug", true)
+	cnf.Set("stage.env", "stage")
+	fmt.Println("Get Stage.debug: ", cnf.Get("stage.debug"))
 
 	cnf.SaveAs("./conf/aaa.yml")
 	cnf.Save()
