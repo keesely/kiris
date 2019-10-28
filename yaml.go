@@ -9,10 +9,11 @@ package kiris
 import (
 	"errors"
 	"fmt"
-	beegoYaml "github.com/astaxie/beego/config/yaml"
 	yaml "gopkg.in/yaml.v2"
+	"io/ioutil"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 	"sync"
 )
@@ -24,12 +25,78 @@ type Yaml struct {
 }
 
 func NewYamlLoad(filename string) *Yaml {
-	cnf, err := beegoYaml.ReadYmlReader(filename)
-	if err != nil {
-		log.Fatal("Get Yaml Error: ", err)
+	f, e := ioutil.ReadFile(filename)
+	if e != nil {
+		log.Fatal("Get Yaml Error: ", e)
 	}
+
+	cnf := make(map[string]interface{})
+	e = yaml.Unmarshal(f, cnf)
+	if e != nil {
+		log.Fatal("Unmarshal Yaml: ", e)
+	}
+
+	cnf = ExpandValueEnvForMap(cnf)
 	return &Yaml{data: cnf, filename: filename}
-	return nil
+}
+
+func ExpandValueEnvForMap(m map[string]interface{}) map[string]interface{} {
+	// 获取keys
+	for k, v := range m {
+		switch value := v.(type) {
+		case string:
+			m[k] = ExpandValueEnv(value)
+		case map[string]interface{}:
+			m[k] = ExpandValueEnvForMap(value)
+		case map[interface{}]interface{}:
+			_value := make(map[string]interface{})
+			for _k, _v := range m[k].(map[interface{}]interface{}) {
+				_value[_k.(string)] = _v
+			}
+			m[k] = _value
+			m[k] = ExpandValueEnvForMap(_value)
+		case map[string]string:
+			for k2, v2 := range value {
+				value[k2] = ExpandValueEnv(v2)
+			}
+			m[k] = value
+		}
+	}
+	return m
+}
+
+// Convert `$(ENV)` || `$(ENV||defaultValue)` || `$(ENV||)`
+// Return the env value || if env is nil return defaultValue || env is nil return ""
+func ExpandValueEnv(value string) (realValue string) {
+	realValue = value
+
+	defaultV := ""
+	regx := regexp.MustCompile(`(?U)\$\{.+\}`)
+	if x := regx.FindAllString(realValue, -1); len(x) > 0 {
+		for _, v := range x {
+			vLen := len(v)
+			if vLen < 3 {
+				continue
+			}
+			if key := v[2 : vLen-1]; len(key) > 0 {
+				defVal := ""
+				defValIndex := strings.Index(v, "||")
+				if defValIndex > 0 {
+					key = v[2:defValIndex]
+					defVal = v[defValIndex+2 : vLen-1]
+				}
+
+				eVal := GetEnv(key, defVal).(string)
+				realValue = strings.Replace(realValue, v, eVal, -1)
+			}
+		}
+	}
+
+	if realValue == "" {
+		realValue = defaultV
+	}
+
+	return
 }
 
 func (this *Yaml) Get(key string, _def ...interface{}) interface{} {
@@ -57,7 +124,7 @@ func (this *Yaml) getData(key string) (interface{}, error) {
 
 	keys := strings.Split(key, ".")
 
-	_data := this.data
+	_data := DeepCopy(this.data).(map[string]interface{})
 	for idx, k := range keys {
 		if v, ok := _data[k]; ok {
 			switch v.(type) {

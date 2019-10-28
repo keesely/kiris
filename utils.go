@@ -6,6 +6,13 @@
 ************************************************************************/
 package kiris
 
+import (
+	"fmt"
+	"math/rand"
+	"os"
+	"time"
+)
+
 func Ternary(cond bool, Tval, Fval interface{}) interface{} {
 	if cond {
 		return Tval
@@ -31,4 +38,23 @@ func DeepCopy(value interface{}) interface{} {
 	}
 
 	return value
+}
+
+func GetEnv(key string, def ...interface{}) interface{} {
+	var _def interface{}
+	if def != nil && def[0] != nil {
+		_def = def[0]
+	}
+
+	val := os.Getenv(key)
+	return Ternary(val != "", val, _def)
+}
+
+func Typeof(value interface{}) string {
+	return fmt.Sprintf("%T", value)
+}
+
+func Rand(x, y int) int {
+	rand.Seed(time.Now().UnixNano())
+	return rand.Intn(y-x+1) + x
 }
