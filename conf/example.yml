@@ -4,7 +4,7 @@ version: 1.0.0
 product:
   cache: true
   debug: false
-  env: product
+  env: ${APP_ENV||local}
   host: http://localhost:3000
   key: 2ertyuioijhbv
   listen: :3000

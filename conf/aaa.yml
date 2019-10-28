@@ -2,7 +2,7 @@ name: 81
 product:
   cache: true
   debug: false
-  env: production
+  env: local/stage
   host: http://localhost:3000
   key: 2ertyuioijhbv
   listen: :3000
