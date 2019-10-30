@@ -1,24 +1,42 @@
 name: 81
+version: 1.0.0
 product:
   cache: true
   debug: false
-  env: local/stage
-  host: http://localhost:3000
+  env: product
+  host: http://www.example.com
   key: 2ertyuioijhbv
-  listen: :3000
+  listen: :80
   location: 87
   port: 3000
+  redis:
+    host: localhost
+local:
+  cache: true
+  debug: true
+  env: local
+  host: http://localhost:3000
+  key: 2345678ghjkl
+  listen: :3000
+  location: Asia/Shanghai
+  port: 1000
   redis:
     host: localhost
 stage:
   cache: true
   debug: true
-  env: stage
-  host: http://localhost:3000
+  env: _stage_
+  host: http://www.example.com
   key: 2ertyuioijhbv
-  listen: :3000
+  listen: :80
   location: 87
   port: 3000
   redis:
     host: localhost
-version: 1.0.0
+disk:
+  io: 65539
+
+networks:
+- lo
+- wlan
+- eth-0

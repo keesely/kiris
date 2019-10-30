@@ -4,11 +4,25 @@ version: 1.0.0
 product:
   cache: true
   debug: false
-  env: ${APP_ENV||local}
-  host: http://localhost:3000
+  env: ${APP_ENV||product}
+  host: http://www.example.com
   key: 2ertyuioijhbv
-  listen: :3000
-  location: PRC
-  port: 3000
+  listen: :80
+  location: UTC
+  port: 80
   redis:
     host: localhost
+
+# 添加本地配置
+local:
+  cache: true
+  debug: true
+  env: ${APP_ENV||local}
+  host: http://localhost:3000
+  key: 2345678ghjkl
+  listen: :3000
+  location: Asia/Shanghai
+  port: 1000
+  redis:
+    host: localhost
+

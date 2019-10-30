@@ -13,8 +13,9 @@ import (
 )
 
 type Yaml struct {
-	data     map[string]interface{}
-	filename string
+	originData yaml.MapSlice
+	data       map[string]interface{}
+	filename   string
 	sync.RWMutex
 }
 
@@ -26,12 +27,14 @@ func NewYamlLoad(filename string) *Yaml {
 
 	cnf := make(map[string]interface{})
 	e = yaml.Unmarshal(f, cnf)
+	data := &yaml.MapSlice{}
+	e = yaml.Unmarshal(f, data)
 	if e != nil {
 		log.Fatal("Unmarshal Yaml: ", e)
 	}
 
 	cnf = FormatValueMaps(cnf)
-	return &Yaml{data: cnf, filename: filename}
+	return &Yaml{data: cnf, filename: filename, originData: *data}
 }
 
 func FormatValueMaps(m map[string]interface{}) map[string]interface{} {
@@ -91,6 +94,7 @@ func ExpandValueEnv(value string) string {
 		rVal = dVal
 	}
 
+	fmt.Println(rVal)
 	return Ternary(rVal == "", dVal, rVal).(string)
 }
 
@@ -172,6 +176,7 @@ func (this *Yaml) Set(key string, value interface{}) error {
 			_data[k] = make(map[string]interface{})
 			if i == len(keys)-1 {
 				_data[k] = value
+				this.originData = getSaveData(this.originData, this.data)
 			} else {
 				vv := make(map[string]interface{})
 				_data[k] = vv
@@ -193,6 +198,39 @@ func (this *Yaml) SaveAs(filename string) error {
 	}
 	defer f.Close()
 	ye := yaml.NewEncoder(f)
-	err = ye.Encode(this.data)
+	//err = ye.Encode(this.data)
+	this.originData = getSaveData(this.originData, this.data)
+	err = ye.Encode(this.originData)
 	return err
+}
+
+func getSaveData(originData yaml.MapSlice, data map[string]interface{}) yaml.MapSlice {
+	for k, v := range data {
+		var (
+			i    int
+			flag bool
+		)
+		for _i, m := range originData {
+			if m.Key == k {
+				i = _i
+				flag = true
+			}
+		}
+
+		if true != flag {
+			if value, ok := yaml.Marshal(v); ok == nil {
+				m := &yaml.MapSlice{}
+				_ = yaml.Unmarshal(value, m)
+				originData = append(originData, yaml.MapItem{Key: k, Value: *m})
+			}
+		} else {
+			switch value := v.(type) {
+			case map[string]interface{}:
+				originData[i].Value = getSaveData(originData[i].Value.(yaml.MapSlice), value)
+			default:
+				originData[i].Value = value
+			}
+		}
+	}
+	return originData
 }
