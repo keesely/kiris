@@ -35,7 +35,6 @@ stage:
     host: localhost
 disk:
   io: 65539
-
 networks:
 - lo
 - wlan
