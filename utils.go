@@ -157,3 +157,11 @@ func StrPad(str, pad string, length, padType int) string {
 func StrCount(str string) int {
 	return len([]rune(str))
 }
+
+//截取字符串
+func SubStr(str string, pos, length int) string {
+	runes := []rune(str)
+	l := pos + length
+	l = Ternary(l > len(runes), len(runes), l).(int)
+	return string(runes[pos:l])
+}
