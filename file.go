@@ -1,9 +1,3 @@
-/*************************************************************************
-   > File Name: file.go
-   > Author: Kee
-   > Mail: chinboy2012@gmail.com
-   > Created Time: 2019.11.07
-************************************************************************/
 package kiris
 
 import (
@@ -20,6 +14,7 @@ const (
 	KIRIS_FILE_APPEND = os.O_APPEND | os.O_WRONLY
 )
 
+// 获取文件内容
 func FileGetContents(file string) (string, error) {
 	fl, err := os.Open(file)
 
@@ -34,6 +29,7 @@ func FileGetContents(file string) (string, error) {
 	return string(content), err
 }
 
+// 写入文件内容
 func FilePutContents(file, content string, opts int) error {
 	if true != FileExists(file) {
 		_, err := os.Create(file)
@@ -66,14 +62,18 @@ func FilePutContents(file, content string, opts int) error {
 	return nil
 }
 
+// 写入新的文件内容-覆盖
 func FilePut(file, content string) error {
 	return FilePutContents(file, content, 0)
 }
 
+// 追加写入文件内容
 func FileAppend(file, content string) error {
 	return FilePutContents(file, content, KIRIS_FILE_APPEND)
 }
 
+// 检索文件 - 支持通配符
+// 例：FileSearch("~/.ssh/*.pub")
 func FileSearch(fileName string) ([]string, error) {
 	pattern := fileName
 
