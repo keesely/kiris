@@ -26,6 +26,7 @@ func (this *K_VMaps) Load(dbFile string) (*K_VMaps, error) {
 	if dbFile == "" {
 		return nil, fmt.Errorf("%s", "Invalid db file path")
 	}
+	dbFile = RealPath(dbFile)
 	file, err := os.Open(dbFile)
 	if err != nil {
 		return nil, err
@@ -41,6 +42,9 @@ func (this *K_VMaps) Load(dbFile string) (*K_VMaps, error) {
 }
 
 func (this *K_VMaps) Save(dbFile string) error {
+	if dbFile == "" {
+		return fmt.Errorf("%s", "Invalid db file path")
+	}
 	var GolngGob bytes.Buffer
 	gob.Register(map[string]K_VMaps{})
 	gob.Register(K_VElement{})
@@ -51,6 +55,7 @@ func (this *K_VMaps) Save(dbFile string) error {
 	if err != nil {
 		return err
 	}
+	dbFile = RealPath(dbFile)
 	ioutil.WriteFile(dbFile, GolngGob.Bytes(), 0644)
 	return nil
 }
