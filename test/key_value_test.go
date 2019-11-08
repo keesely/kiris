@@ -41,4 +41,6 @@ func TestLoad(t *testing.T) {
 	kMap := NewK_VMaps()
 	kMap.Load(saveFile)
 	kMap.Print()
+
+	fmt.Println(kMap.List())
 }
