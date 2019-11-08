@@ -105,10 +105,14 @@ func (this *K_VMaps) GetValue(key string, def ...interface{}) interface{} {
 
 func (this *K_VMaps) Print() {
 	fmt.Printf("%100s\n", StrPad("", "=", 100, KIRIS_STR_PAD_RIGHT))
-	for key, val := range this.data {
+	for key, val := range this.List() {
 		fmt.Printf(" Key: %-30s Value: %v \n", key, val.Value)
 	}
 	fmt.Printf("%100s\n", StrPad("", "=", 100, KIRIS_STR_PAD_RIGHT))
+}
+
+func (this *K_VMaps) List() map[string]*K_VElement {
+	return this.data
 }
 
 func (this *K_VElement) SetAttr(key string, value interface{}) *K_VElement {
