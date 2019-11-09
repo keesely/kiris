@@ -2,6 +2,7 @@ package kiris
 
 import (
 	"fmt"
+	"kiris"
 	"math/rand"
 	"testing"
 )
@@ -9,7 +10,7 @@ import (
 func TestConfGet(t *testing.T) {
 	fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 	fmt.Println("Load Yaml Config")
-	cnf := NewYamlLoad("./conf/test.yml")
+	cnf := NewYamlLoad("./data/test.yml")
 
 	fmt.Println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
 	fmt.Println(cnf.Get(""))
@@ -54,7 +55,7 @@ func TestConfGet(t *testing.T) {
 	fmt.Println("Get Stage.debug: ", cnf.Get("stage.debug"))
 	fmt.Println("Get Product.debug: ", cnf.Get("product.debug"))
 	//
-	cnf.SaveAs("./conf/aaa.yml")
+	cnf.SaveAs("./data/test2.yml")
 	//cnf.Save()
 
 }
