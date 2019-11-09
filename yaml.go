@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	yaml "gopkg.in/yaml.v2"
-	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
@@ -22,13 +21,12 @@ var saveFile string
 
 func NewYamlLoad(filename string) *Yaml {
 	saveFile = RealPath(filename)
-	f, e := ioutil.ReadFile(saveFile)
+	f, e := FileGetContents(saveFile)
 	if e != nil {
 		log.Fatal("Get Yaml Error: ", e)
 	}
 
 	return NewYaml(f)
-
 }
 
 func NewYaml(yc []byte) *Yaml {
