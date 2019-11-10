@@ -2,7 +2,6 @@ package kiris
 
 import (
 	"fmt"
-	"kiris"
 	"math/rand"
 	"testing"
 )
@@ -10,6 +9,11 @@ import (
 func TestConfGet(t *testing.T) {
 	fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 	fmt.Println("Load Yaml Config")
+	yml := NewYaml([]byte{})
+	yml.Set("test.Name", "kee")
+	yml.Set("test.Location", "PRC")
+	yml.SaveAs("./data/test.yml")
+
 	cnf := NewYamlLoad("./data/test.yml")
 
 	fmt.Println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")

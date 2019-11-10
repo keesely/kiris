@@ -99,7 +99,6 @@ func ExpandValueEnv(value string) string {
 		rVal = dVal
 	}
 
-	fmt.Println(rVal)
 	return Ternary(rVal == "", dVal, rVal).(string)
 }
 

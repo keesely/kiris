@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"reflect"
 	"time"
 )
 
@@ -148,12 +149,11 @@ func StrPad(str, pad string, length, padType int) string {
 	return l_pad + str + r_pad
 }
 
-/**
- * 获取字符串字数
+/* 获取字符串字数
  * @param {string} str 要计算的字符串
  *
  * @return int
- * */
+ */
 func StrCount(str string) int {
 	return len([]rune(str))
 }
@@ -164,4 +164,23 @@ func SubStr(str string, pos, length int) string {
 	l := pos + length
 	l = Ternary(l > len(runes), len(runes), l).(int)
 	return string(runes[pos:l])
+}
+
+// 接口转换到结构体
+func ConverStruct(inter map[string]interface{}, conver interface{}, tag string) {
+	cRef := reflect.ValueOf(conver).Elem()
+	for i := 0; i < cRef.NumField(); i++ {
+		fieldInfo := cRef.Type().Field(i) // a reflect.StructField
+		name := fieldInfo.Name
+		//typeof := fieldInfo.Type
+		fTag := fieldInfo.Tag // a reflect.StructTag
+		tagName := fTag.Get(tag)
+		if tagName != "" {
+			name = tagName
+		}
+		if v, ok := inter[name]; ok {
+			cRef.Field(i).Set(reflect.ValueOf(v))
+		}
+	}
+	return
 }
