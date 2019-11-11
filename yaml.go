@@ -208,6 +208,11 @@ func (this *Yaml) SaveAs(filename string) error {
 	return err
 }
 
+func (this *Yaml) SaveToString() ([]byte, error) {
+	this.originData = getSaveData(this.originData, this.data)
+	return yaml.Marshal(this.originData)
+}
+
 func getSaveData(originData yaml.MapSlice, data map[string]interface{}) yaml.MapSlice {
 	for k, v := range data {
 		var (

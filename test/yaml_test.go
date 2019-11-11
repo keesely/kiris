@@ -14,6 +14,9 @@ func TestConfGet(t *testing.T) {
 	yml.Set("test.Location", "PRC")
 	yml.SaveAs("./data/test.yml")
 
+	str, _ := yml.SaveToString()
+	fmt.Println("Save To String: ", string(str))
+
 	cnf := NewYamlLoad("./data/test.yml")
 
 	fmt.Println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
