@@ -11,7 +11,7 @@ import (
 )
 
 // AES 加密
-func AESEncrypt(origin, key, mod string) string {
+func AESEncrypt(origin, key, mod string) []byte {
 	originBytes, keyBytes := []byte(origin), []byte(key)
 	// 分组密钥
 	block, e := aes.NewCipher(keyBytes)
@@ -28,12 +28,14 @@ func AESEncrypt(origin, key, mod string) string {
 	cryted := make([]byte, len(originBytes))
 	blockMode.CryptBlocks(cryted, originBytes)
 
-	return Base64Encode(cryted)
+	return cryted
+	//return Base64Encode(cryted)
 }
 
 // AES 解码
-func AESDecrypt(cryted, key, mod string) string {
-	crytedBytes, keyBytes := Base64Decode(cryted), []byte(key)
+func AESDecrypt(cryted []byte, key, mod string) string {
+	//crytedBytes, keyBytes := Base64Decode(cryted), []byte(key)
+	keyBytes := []byte(key)
 	// 分组秘钥
 	block, e := aes.NewCipher(keyBytes)
 	if e != nil {
@@ -43,9 +45,9 @@ func AESDecrypt(cryted, key, mod string) string {
 	blockSize := block.BlockSize()
 	// 加密模式
 	blockMode := cipher.NewCBCDecrypter(block, keyBytes[:blockSize])
-	origin := make([]byte, len(crytedBytes))
+	origin := make([]byte, len(cryted))
 	// 解码
-	blockMode.CryptBlocks(origin, crytedBytes)
+	blockMode.CryptBlocks(origin, cryted)
 	// pkcs7 去码
 	origin = PKCS7UnPadding(origin)
 	return string(origin)
