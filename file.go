@@ -40,7 +40,6 @@ func FilePutContents(file, content string, opts int) error {
 	}
 
 	//opts := 0
-	fmt.Println("OPTS: ", opts)
 	//if opt == KIRIS_FILE_APPEND {
 	//opts = os.O_APPEND | os.O_WRONLY
 	//}
