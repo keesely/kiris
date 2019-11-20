@@ -191,6 +191,37 @@ func (this *Yaml) Set(key string, value interface{}) error {
 	return nil
 }
 
+func (this *Yaml) Del(key string) error {
+	if len(key) == 0 {
+		return errors.New("key is empty")
+	}
+
+	this.Lock()
+	defer this.Unlock()
+
+	keys := strings.Split(key, ".")
+	var _data = this.data
+	for i, k := range keys {
+		if v, ok := _data[k]; ok {
+			switch v.(type) {
+			case map[string]interface{}:
+				{
+					if i == len(keys)-1 {
+						delete(_data, k)
+					} else {
+						_data = v.(map[string]interface{})
+					}
+				}
+			default:
+				{
+					delete(_data, k)
+				}
+			}
+		}
+	}
+	return nil
+}
+
 func (this *Yaml) Save() error {
 	return this.SaveAs(saveFile)
 }
@@ -214,15 +245,23 @@ func (this *Yaml) SaveToString() ([]byte, error) {
 }
 
 func getSaveData(originData yaml.MapSlice, data map[string]interface{}) yaml.MapSlice {
+	//var _data = yaml.MapSlice{}
 	for k, v := range data {
-		var (
-			i    int
-			flag bool
-		)
-		for _i, m := range originData {
+		var flag bool
+		for i := 0; i < len(originData); i++ {
+			m := originData[i]
+			if _, ok := data[m.Key.(string)]; !ok {
+				originData = append(originData[:i], originData[i+1:]...)
+				continue
+			}
 			if m.Key == k {
-				i = _i
 				flag = true
+				switch value := v.(type) {
+				case map[string]interface{}:
+					originData[i].Value = getSaveData(originData[i].Value.(yaml.MapSlice), value)
+				default:
+					originData[i].Value = value
+				}
 			}
 		}
 
@@ -231,13 +270,6 @@ func getSaveData(originData yaml.MapSlice, data map[string]interface{}) yaml.Map
 				m := &yaml.MapSlice{}
 				_ = yaml.Unmarshal(value, m)
 				originData = append(originData, yaml.MapItem{Key: k, Value: *m})
-			}
-		} else {
-			switch value := v.(type) {
-			case map[string]interface{}:
-				originData[i].Value = getSaveData(originData[i].Value.(yaml.MapSlice), value)
-			default:
-				originData[i].Value = value
 			}
 		}
 	}
