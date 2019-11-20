@@ -2,7 +2,7 @@ package kiris
 
 import (
 	"fmt"
-	"io"
+	//"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -31,7 +31,7 @@ func FileGetContents(file string) ([]byte, error) {
 
 // 写入文件内容
 func FilePutContents(file, content string, opts int) error {
-	if true != FileExists(file) {
+	if true != FileExists(file) || 0 == opts {
 		_, err := os.Create(file)
 
 		if err != nil {
@@ -39,17 +39,12 @@ func FilePutContents(file, content string, opts int) error {
 		}
 	}
 
-	//opts := 0
-	//if opt == KIRIS_FILE_APPEND {
-	//opts = os.O_APPEND | os.O_WRONLY
-	//}
 	if 0 == opts {
-		opts = os.O_WRONLY
+		opts = os.O_WRONLY | os.O_SYNC
 	}
 
 	fl, err := os.OpenFile(file, opts, 0755)
-
-	n, err := io.WriteString(fl, content)
+	n, err := fl.Write([]byte(content))
 	defer fl.Close()
 
 	if err != nil {

@@ -31,7 +31,7 @@ func Test(t *testing.T) {
 	if true == exists {
 		fmt.Println("文件已存在 / File exists")
 		content, _ := FileGetContents("./test.txt")
-		fmt.Println("文本内容(The content): \n```\n", content, "\n```")
+		fmt.Println("文本内容(The content): \n```\n", string(content), "\n```")
 	} else {
 		fmt.Println("文件不存在 / File is not exists")
 	}
